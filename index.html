@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Firm Efficiency Calculator | CENTERLINE</title>
+    <meta name="description" content="How much time is your architecture firm losing to manual project administration? Calculate your weekly hours lost on RFIs, submittals, punch lists, and closeout — and see what you could save.">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Slab:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #2ea3f2;
+            --blue-hover: #1b8fd9;
+            --blue-light: rgba(46, 163, 242, 0.08);
+            --blue-glow: rgba(46, 163, 242, 0.15);
+            --navy: #0947b9;
+            --navy-dark: #073594;
+            --charcoal: #464546;
+            --teal: #82c0c7;
+            --teal-bg: rgba(130, 192, 199, 0.08);
+
+            --text: #464546;
+            --text-secondary: #6b6b6b;
+            --text-light: #999999;
+            --bg: #ffffff;
+            --bg-alt: #f7f8fa;
+            --bg-section: #eef1f5;
+            --border: #e2e5ea;
+            --border-light: #eff1f4;
+
+            --font: 'Roboto', Arial, sans-serif;
+            --font-slab: 'Roboto Slab', Georgia, serif;
+            --font-mono: 'Roboto Mono', 'SF Mono', monospace;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --transition: 0.2s ease;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══ HEADER ═══ */
+        .cl-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 60%, #0a2d6e 100%);
+            color: white;
+            text-align: center;
+            padding: 3rem 1.5rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cl-header::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(46,163,242,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .cl-header-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: 1.25rem;
+        }
+
+        .cl-header h1 {
+            font-family: var(--font-slab);
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        .cl-header p {
+            font-size: 1rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.7);
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .cl-header .workflows {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .cl-header .wf-tag {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.45);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .wf-tag .pip {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--blue);
+        }
+
+        /* ═══ MAIN LAYOUT ═══ */
+        .calc-container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 860px) {
+            .calc-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .cl-header { padding: 2rem 1rem 1.75rem; }
+            .cl-header h1 { font-size: 1.5rem; }
+            .calc-container { padding: 1.5rem 1rem 3rem; }
+        }
+
+        /* ═══ PANELS ═══ */
+        .panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .panel-body { padding: 1.5rem; }
+
+        .panel-section {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .panel-section:last-child { border-bottom: none; }
+
+        .section-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-label .num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            color: var(--blue);
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ═══ FORM CONTROLS ═══ */
+        .field {
+            margin-bottom: 1.25rem;
+        }
+
+        .field:last-child { margin-bottom: 0; }
+
+        .field label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.4rem;
+        }
+
+        .field-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .field-value {
+            font-family: var(--font);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+
+        .field-hint {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--blue);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+            box-shadow: 0 1px 4px rgba(46,163,242,0.3);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--blue);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .select-wrap select {
+            width: 100%;
+            padding: 0.6rem 2rem 0.6rem 0.75rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 0.85rem;
+            color: var(--text);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            transition: all 0.15s ease;
+        }
+
+        .select-wrap select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-light);
+        }
+
+        /* Time input grid */
+        .time-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.375rem 0.75rem;
+            align-items: center;
+        }
+
+        .time-grid .tg-label {
+            font-size: 0.82rem;
+            color: var(--text);
+        }
+
+        .time-grid .tg-input {
+            width: 72px;
+            padding: 0.4rem 0.5rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .time-grid .tg-input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-light);
+        }
+
+        /* ═══ RESULTS SIDE ═══ */
+        .results-col {
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        @media (max-width: 860px) {
+            .results-col { position: static; }
+        }
+
+        /* Hero metric */
+        .hero-metric {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-metric::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -15%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(46,163,242,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-metric-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-metric-value {
+            font-family: var(--font-slab);
+            font-size: 3.25rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            position: relative;
+        }
+
+        .hero-metric-value .unit {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.5);
+            margin-left: 0.15rem;
+        }
+
+        .hero-metric-sub {
+            font-size: 0.82rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Stat cards */
+        .stat-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-value {
+            font-family: var(--font-slab);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .stat-detail {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 0.15rem;
+        }
+
+        /* Workflow breakdown */
+        .breakdown-panel {
+            margin-bottom: 1rem;
+        }
+
+        .breakdown-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-light);
+            padding: 1rem 1.25rem 0.75rem;
+        }
+
+        .wf-row {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1.25rem;
+            gap: 0.75rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .wf-name {
+            font-size: 0.82rem;
+            color: var(--text);
+            min-width: 100px;
+        }
+
+        .wf-bar-track {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-section);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .wf-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            min-width: 2px;
+        }
+
+        .wf-bar-fill.rfi { background: var(--blue); }
+        .wf-bar-fill.submittals { background: var(--navy); }
+        .wf-bar-fill.punchlist { background: var(--teal); }
+        .wf-bar-fill.closeout { background: #7b8ec2; }
+
+        .wf-hours {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* Annual impact */
+        .annual-panel {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .annual-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            font-size: 0.85rem;
+        }
+
+        .annual-row + .annual-row {
+            border-top: 1px solid var(--border);
+        }
+
+        .annual-row .a-label { color: var(--text-secondary); }
+
+        .annual-row .a-value {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .annual-row.highlight {
+            border-top: 2px solid var(--border);
+            padding-top: 0.6rem;
+            margin-top: 0.2rem;
+        }
+
+        .annual-row.highlight .a-label {
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .annual-row.highlight .a-value {
+            color: var(--blue);
+            font-size: 1.1rem;
+        }
+
+        /* CTA */
+        .cta-panel {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem 1.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-panel h3 {
+            font-family: var(--font-slab);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .cta-panel p {
+            font-size: 0.82rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 1.25rem;
+        }
+
+        .btn-cta {
+            display: inline-block;
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .btn-cta:hover {
+            background: var(--blue-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46,163,242,0.35);
+        }
+
+        .cta-note {
+            display: block;
+            margin-top: 0.6rem;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.35);
+        }
+
+        /* ═══ FOOTER ═══ */
+        .cl-footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            font-size: 0.72rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+        }
+
+        .cl-footer a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        .cl-footer a:hover { text-decoration: underline; }
+
+        /* ═══ EMPTY STATE ═══ */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-light);
+        }
+
+        .empty-state .es-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ACCESS GATE — preview build for stakeholder demo -->
+
+<style>
+    #access-gate { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #0947b9 0%, #073594 100%); display: flex; align-items: center; justify-content: center; font-family: 'Roboto', Arial, sans-serif; }
+    #access-gate.hidden { display: none; }
+    #access-panel { width: 100%; max-width: 420px; margin: 1.5rem; background: #fff; padding: 2.25rem 2rem; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+    #access-panel .gate-eyebrow { font-size: .7rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #2ea3f2; margin-bottom: .5rem; }
+    #access-panel h1 { font-family: 'Roboto Slab', Georgia, serif; font-size: 1.5rem; font-weight: 700; color: #0947b9; line-height: 1.2; margin: 0 0 .5rem; }
+    #access-panel .gate-sub { font-size: .9rem; color: #464546; margin: 0 0 1.25rem; line-height: 1.55; }
+    #access-panel label { display: block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #6b6b6b; margin-bottom: .4rem; }
+    #access-panel input { width: 100%; padding: .75rem .9rem; font-family: inherit; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 6px; background: #f7f8fa; color: #1a1a1a; box-sizing: border-box; }
+    #access-panel input:focus { outline: none; border-color: #2ea3f2; box-shadow: 0 0 0 3px rgba(46,163,242,.15); background: #fff; }
+    #access-panel button { width: 100%; margin-top: 1rem; padding: .85rem; background: #0947b9; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: .9rem; font-weight: 600; letter-spacing: .02em; cursor: pointer; transition: background .15s; }
+    #access-panel button:hover { background: #073594; }
+    #access-panel .gate-err { font-size: .82rem; color: #b91c1c; margin-top: .75rem; min-height: 1.2em; }
+    #access-panel .gate-foot { font-size: .72rem; color: #9ca3af; margin-top: 1.25rem; text-align: center; }
+    #app-gated { display: none; }
+    #app-gated.unlocked { display: block; }
+</style>
+
+<div id="access-gate">
+    <div id="access-panel">
+        <div class="gate-eyebrow">CENTERLINE Preview</div>
+        <h1>Private Demo</h1>
+        <p class="gate-sub">This is a private preview for invited stakeholders. Enter your access code to continue.</p>
+        <form id="gate-form">
+            <label for="gate-input">Access code</label>
+            <input type="password" id="gate-input" autocomplete="off" autofocus>
+            <button type="submit">Continue</button>
+            <div class="gate-err" id="gate-err"></div>
+        </form>
+        <div class="gate-foot">For access, contact your CENTERLINE representative.</div>
+    </div>
+</div>
+
+<div id="app-gated">
+
+    <!-- HEADER -->
+    <div class="cl-header">
+        <div class="cl-header-badge">Free Calculator</div>
+        <h1>How Much Time Is Your Firm Losing to Manual CA Workflows?</h1>
+        <p>Most architecture firms spend 20-30 hours per week on project admin that should take a fraction of the time.</p>
+        <div class="workflows">
+            <span class="wf-tag"><span class="pip"></span> RFIs</span>
+            <span class="wf-tag"><span class="pip"></span> Submittals</span>
+            <span class="wf-tag"><span class="pip"></span> Punch Lists</span>
+            <span class="wf-tag"><span class="pip"></span> Closeout</span>
+        </div>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="calc-container">
+        <div class="calc-grid">
+
+            <!-- LEFT: INPUTS -->
+            <div>
+                <div class="panel">
+                    <!-- Section 1: Firm Profile -->
+                    <div class="panel-section">
+                        <div class="section-label"><span class="num">1</span> Your Firm</div>
+
+                        <div class="field">
+                            <label for="staff">
+                                <span class="field-label">Staff involved in project admin</span>
+                                <span class="field-value" id="staff-value">5</span>
+                            </label>
+                            <input type="range" id="staff" min="1" max="50" step="1" value="5" oninput="update()">
+                            <div class="field-hint">Architects, PMs, and CA staff who touch RFIs, submittals, or punch lists</div>
+                        </div>
+
+                        <div class="field">
+                            <label for="projects">
+                                <span class="field-label">Active projects</span>
+                                <span class="field-value" id="projects-value">4</span>
+                            </label>
+                            <input type="range" id="projects" min="1" max="30" step="1" value="4" oninput="update()">
+                        </div>
+
+                        <div class="field">
+                            <label for="avg-rate">
+                                <span class="field-label">Avg. billable rate of admin staff</span>
+                                <span class="field-value" id="avg-rate-value">$125/hr</span>
+                            </label>
+                            <input type="range" id="avg-rate" min="50" max="300" step="5" value="125" oninput="update()">
+                            <div class="field-hint">Used to calculate the cost of unbillable admin time</div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Current Tools -->
+                    <div class="panel-section">
+                        <div class="section-label"><span class="num">2</span> Current Tools</div>
+
+                        <div class="field">
+                            <label for="current-tools"><span class="field-label">Primary method for managing CA</span></label>
+                            <div class="select-wrap">
+                                <select id="current-tools" onchange="update()">
+                                    <option value="email">Email + spreadsheets</option>
+                                    <option value="generic">Generic PM tool (Asana, Monday, etc.)</option>
+                                    <option value="construction">Construction platform (Procore, etc.)</option>
+                                    <option value="partial">Mix of tools, nothing unified</option>
+                                    <option value="paper">Paper-based / manual tracking</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Weekly Time -->
+                    <div class="panel-section">
+                        <div class="section-label"><span class="num">3</span> Weekly Hours on Workflows</div>
+                        <p style="font-size:0.78rem;color:var(--text-light);margin-bottom:1rem;">Estimate the total hours your team spends per week across all projects on each workflow. Include drafting, tracking, chasing responses, and logging.</p>
+
+                        <div class="time-grid">
+                            <span class="tg-label">RFIs</span>
+                            <input type="number" class="tg-input" id="hrs-rfi" value="6" min="0" max="80" oninput="update()">
+
+                            <span class="tg-label">Submittals</span>
+                            <input type="number" class="tg-input" id="hrs-submittals" value="5" min="0" max="80" oninput="update()">
+
+                            <span class="tg-label">Punch Lists</span>
+                            <input type="number" class="tg-input" id="hrs-punchlist" value="4" min="0" max="80" oninput="update()">
+
+                            <span class="tg-label">Closeout Docs</span>
+                            <input type="number" class="tg-input" id="hrs-closeout" value="3" min="0" max="80" oninput="update()">
+                        </div>
+                        <div class="field-hint" style="margin-top:0.6rem;">Industry benchmarks: firms of this size typically report 15-25 hrs/week total</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: RESULTS -->
+            <div class="results-col">
+
+                <!-- Hero: Hours recovered -->
+                <div class="hero-metric">
+                    <div class="hero-metric-label">Estimated Weekly Hours Recovered</div>
+                    <div class="hero-metric-value" id="hero-hours">0<span class="unit">hrs</span></div>
+                    <div class="hero-metric-sub" id="hero-sub">per week with streamlined workflows</div>
+                </div>
+
+                <!-- Stat cards -->
+                <div class="stat-row">
+                    <div class="stat-card">
+                        <div class="stat-label">Cost of Current Waste</div>
+                        <div class="stat-value" id="stat-waste">$0</div>
+                        <div class="stat-detail">per week in unbillable time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Time Back Per Person</div>
+                        <div class="stat-value" id="stat-per-person">0h</div>
+                        <div class="stat-detail">per week, per staff member</div>
+                    </div>
+                </div>
+
+                <!-- Workflow breakdown -->
+                <div class="panel breakdown-panel">
+                    <div class="breakdown-title">Savings by Workflow</div>
+                    <div class="wf-row">
+                        <span class="wf-name">RFIs</span>
+                        <div class="wf-bar-track"><div class="wf-bar-fill rfi" id="bar-rfi" style="width:0%"></div></div>
+                        <span class="wf-hours" id="save-rfi">0h</span>
+                    </div>
+                    <div class="wf-row">
+                        <span class="wf-name">Submittals</span>
+                        <div class="wf-bar-track"><div class="wf-bar-fill submittals" id="bar-submittals" style="width:0%"></div></div>
+                        <span class="wf-hours" id="save-submittals">0h</span>
+                    </div>
+                    <div class="wf-row">
+                        <span class="wf-name">Punch Lists</span>
+                        <div class="wf-bar-track"><div class="wf-bar-fill punchlist" id="bar-punchlist" style="width:0%"></div></div>
+                        <span class="wf-hours" id="save-punchlist">0h</span>
+                    </div>
+                    <div class="wf-row">
+                        <span class="wf-name">Closeout</span>
+                        <div class="wf-bar-track"><div class="wf-bar-fill closeout" id="bar-closeout" style="width:0%"></div></div>
+                        <span class="wf-hours" id="save-closeout">0h</span>
+                    </div>
+                </div>
+
+                <!-- Annual impact -->
+                <div class="annual-panel">
+                    <div class="breakdown-title" style="padding:0 0 0.6rem;">Annual Impact</div>
+                    <div class="annual-row">
+                        <span class="a-label">Hours recovered per year</span>
+                        <span class="a-value" id="annual-hours">0</span>
+                    </div>
+                    <div class="annual-row">
+                        <span class="a-label">Equivalent billable value</span>
+                        <span class="a-value" id="annual-value">$0</span>
+                    </div>
+                    <div class="annual-row">
+                        <span class="a-label">Full-time equivalent saved</span>
+                        <span class="a-value" id="annual-fte">0</span>
+                    </div>
+                    <div class="annual-row highlight">
+                        <span class="a-label">Projected annual savings</span>
+                        <span class="a-value" id="annual-savings">$0</span>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="cta-panel">
+                    <h3>See It In Action</h3>
+                    <p>CENTERLINE handles RFIs, submittals, punch lists, and closeout in one platform built for architects — not adapted from construction tools.</p>
+                    <a href="https://getcenterline.com/demo/" class="btn-cta" target="_blank" rel="noopener">Request a Demo</a>
+                    <span class="cta-note">Free walkthrough &middot; No commitment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="cl-footer">
+        Architecture Firm Efficiency Calculator &middot; Built by <a href="https://getcenterline.com/" target="_blank" rel="noopener">CENTERLINE</a>
+        <br>Estimates based on industry benchmarks for construction administration workflows. Actual results vary by firm.
+    </div>
+
+    <script>
+        /* ════════════════════════════════════════════
+           EFFICIENCY MULTIPLIERS
+           ════════════════════════════════════════════
+
+           These represent the % of time that can be
+           recovered by moving to a purpose-built CA
+           platform, based on current tooling.
+
+           Higher = more time wasted on current method.
+        */
+
+        const toolMultipliers = {
+            email:        { rfi: 0.55, submittals: 0.50, punchlist: 0.60, closeout: 0.55 },
+            generic:      { rfi: 0.40, submittals: 0.35, punchlist: 0.45, closeout: 0.40 },
+            construction: { rfi: 0.25, submittals: 0.20, punchlist: 0.30, closeout: 0.25 },
+            partial:      { rfi: 0.45, submittals: 0.40, punchlist: 0.50, closeout: 0.45 },
+            paper:        { rfi: 0.65, submittals: 0.60, punchlist: 0.70, closeout: 0.65 },
+        };
+
+        const fmt = {
+            currency: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+            number: new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }),
+        };
+
+        /* ════════════════════════════════════════════
+           CALCULATE & RENDER
+           ════════════════════════════════════════════ */
+
+        function update() {
+            // Read inputs
+            const staff = parseInt(document.getElementById('staff').value) || 1;
+            const projects = parseInt(document.getElementById('projects').value) || 1;
+            const rate = parseInt(document.getElementById('avg-rate').value) || 100;
+            const tool = document.getElementById('current-tools').value;
+
+            const hrs = {
+                rfi: Math.max(0, parseFloat(document.getElementById('hrs-rfi').value) || 0),
+                submittals: Math.max(0, parseFloat(document.getElementById('hrs-submittals').value) || 0),
+                punchlist: Math.max(0, parseFloat(document.getElementById('hrs-punchlist').value) || 0),
+                closeout: Math.max(0, parseFloat(document.getElementById('hrs-closeout').value) || 0),
+            };
+
+            // Update display values
+            document.getElementById('staff-value').textContent = staff;
+            document.getElementById('projects-value').textContent = projects;
+            document.getElementById('avg-rate-value').textContent = '$' + rate + '/hr';
+
+            // Calculate savings per workflow
+            const mult = toolMultipliers[tool];
+            const saved = {
+                rfi: hrs.rfi * mult.rfi,
+                submittals: hrs.submittals * mult.submittals,
+                punchlist: hrs.punchlist * mult.punchlist,
+                closeout: hrs.closeout * mult.closeout,
+            };
+
+            const totalCurrentHrs = hrs.rfi + hrs.submittals + hrs.punchlist + hrs.closeout;
+            const totalSavedHrs = saved.rfi + saved.submittals + saved.punchlist + saved.closeout;
+            const weeklyWaste = totalCurrentHrs * rate;
+            const perPerson = staff > 0 ? totalSavedHrs / staff : 0;
+            const annualHrs = totalSavedHrs * 50; // 50 working weeks
+            const annualValue = annualHrs * rate;
+            const fte = annualHrs / 2000; // 2000 hrs = 1 FTE
+
+            // Render hero
+            document.getElementById('hero-hours').innerHTML =
+                fmt.number.format(totalSavedHrs) + '<span class="unit">hrs</span>';
+
+            // Stat cards
+            document.getElementById('stat-waste').textContent = fmt.currency.format(weeklyWaste);
+            document.getElementById('stat-per-person').textContent = fmt.number.format(perPerson) + 'h';
+
+            // Workflow bars
+            const maxHrs = Math.max(saved.rfi, saved.submittals, saved.punchlist, saved.closeout, 0.1);
+            renderBar('rfi', saved.rfi, maxHrs);
+            renderBar('submittals', saved.submittals, maxHrs);
+            renderBar('punchlist', saved.punchlist, maxHrs);
+            renderBar('closeout', saved.closeout, maxHrs);
+
+            // Annual
+            document.getElementById('annual-hours').textContent = fmt.number.format(annualHrs);
+            document.getElementById('annual-value').textContent = fmt.currency.format(annualValue);
+            document.getElementById('annual-fte').textContent = fmt.number.format(fte) + ' FTE';
+            document.getElementById('annual-savings').textContent = fmt.currency.format(annualValue);
+        }
+
+        function renderBar(id, hrs, max) {
+            const pct = max > 0 ? (hrs / max) * 100 : 0;
+            document.getElementById('bar-' + id).style.width = pct + '%';
+            document.getElementById('save-' + id).textContent = fmt.number.format(hrs) + 'h';
+        }
+
+        // Initial calculation
+        update();
+    </script>
+
+</div><!-- /app-gated -->
+
+<script>
+(function() {
+    'use strict';
+
+    // ACCESS CONTROL CONFIG
+    // Current password: "seo123"
+    // Change PASSWORD_HASH to a new SHA-256 hash to rotate the code.
+    // See README.md for how to compute a new hash.
+    const PASSWORD_HASH = '7eaca4f6089914498534f4834350ff0505c2860b8570106c1b56257e7f5cb54e';
+    const STORAGE_KEY = 'centerline-demo-unlocked-v1';
+
+    async function sha256Hex(str) {
+        const buf = new TextEncoder().encode(str);
+        const hash = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(hash)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+    }
+
+    function unlock() {
+        document.getElementById('access-gate').classList.add('hidden');
+        document.getElementById('app-gated').classList.add('unlocked');
+    }
+
+    async function attempt(val) {
+        try {
+            const h = await sha256Hex(val);
+            if (h === PASSWORD_HASH) {
+                sessionStorage.setItem(STORAGE_KEY, h);
+                unlock();
+                return true;
+            }
+        } catch (e) {}
+        return false;
+    }
+
+    if (sessionStorage.getItem(STORAGE_KEY) === PASSWORD_HASH) {
+        unlock();
+    }
+
+    document.getElementById('gate-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const input = document.getElementById('gate-input');
+        const err = document.getElementById('gate-err');
+        err.textContent = '';
+        const ok = await attempt(input.value);
+        if (!ok) {
+            err.textContent = 'Incorrect access code.';
+            input.value = '';
+            input.focus();
+        }
+    });
+})();
+</script>
+
+</body>
+</html>
