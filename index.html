@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Architecture Firm Efficiency Calculator | CENTERLINE</title>
     <meta name="description" content="How much time is your architecture firm losing to manual project administration? Calculate your weekly hours lost on RFIs, submittals, punch lists, and closeout — and see what you could save.">
-    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="googlebot" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Slab:wght@400;500;700&display=swap" rel="stylesheet">
@@ -324,6 +322,56 @@
             box-shadow: 0 0 0 3px var(--blue-light);
         }
 
+        /* Expandable extra workflows */
+        .more-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 0.9rem;
+            padding: 0.55rem 0.75rem;
+            background: var(--bg-alt);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--blue);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .more-toggle:hover { border-color: var(--blue); background: var(--blue-light); }
+
+        .more-toggle .mt-icon {
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1;
+            transition: transform 0.18s ease;
+        }
+
+        .more-toggle[aria-expanded="true"] .mt-icon { transform: rotate(45deg); }
+
+        .more-workflows { margin-top: 0.9rem; }
+
+        .wf-group + .wf-group { margin-top: 1.1rem; }
+
+        .wf-group-label {
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-light);
+            margin-bottom: 0.55rem;
+        }
+
+        .wf-empty {
+            padding: 1rem 1.25rem 1.25rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border-light);
+        }
+
         /* ═══ RESULTS SIDE ═══ */
         .results-col {
             position: sticky;
@@ -616,47 +664,10 @@
 </head>
 <body>
 
-<!-- ACCESS GATE — preview build for stakeholder demo -->
-
-<style>
-    #access-gate { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #0947b9 0%, #073594 100%); display: flex; align-items: center; justify-content: center; font-family: 'Roboto', Arial, sans-serif; }
-    #access-gate.hidden { display: none; }
-    #access-panel { width: 100%; max-width: 420px; margin: 1.5rem; background: #fff; padding: 2.25rem 2rem; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
-    #access-panel .gate-eyebrow { font-size: .7rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #2ea3f2; margin-bottom: .5rem; }
-    #access-panel h1 { font-family: 'Roboto Slab', Georgia, serif; font-size: 1.5rem; font-weight: 700; color: #0947b9; line-height: 1.2; margin: 0 0 .5rem; }
-    #access-panel .gate-sub { font-size: .9rem; color: #464546; margin: 0 0 1.25rem; line-height: 1.55; }
-    #access-panel label { display: block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #6b6b6b; margin-bottom: .4rem; }
-    #access-panel input { width: 100%; padding: .75rem .9rem; font-family: inherit; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 6px; background: #f7f8fa; color: #1a1a1a; box-sizing: border-box; }
-    #access-panel input:focus { outline: none; border-color: #2ea3f2; box-shadow: 0 0 0 3px rgba(46,163,242,.15); background: #fff; }
-    #access-panel button { width: 100%; margin-top: 1rem; padding: .85rem; background: #0947b9; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: .9rem; font-weight: 600; letter-spacing: .02em; cursor: pointer; transition: background .15s; }
-    #access-panel button:hover { background: #073594; }
-    #access-panel .gate-err { font-size: .82rem; color: #b91c1c; margin-top: .75rem; min-height: 1.2em; }
-    #access-panel .gate-foot { font-size: .72rem; color: #9ca3af; margin-top: 1.25rem; text-align: center; }
-    #app-gated { display: none; }
-    #app-gated.unlocked { display: block; }
-</style>
-
-<div id="access-gate">
-    <div id="access-panel">
-        <div class="gate-eyebrow">CENTERLINE Preview</div>
-        <h1>Private Demo</h1>
-        <p class="gate-sub">This is a private preview for invited stakeholders. Enter your access code to continue.</p>
-        <form id="gate-form">
-            <label for="gate-input">Access code</label>
-            <input type="password" id="gate-input" autocomplete="off" autofocus>
-            <button type="submit">Continue</button>
-            <div class="gate-err" id="gate-err"></div>
-        </form>
-        <div class="gate-foot">For access, contact your CENTERLINE representative.</div>
-    </div>
-</div>
-
-<div id="app-gated">
-
     <!-- HEADER -->
     <div class="cl-header">
         <div class="cl-header-badge">Free Calculator</div>
-        <h1>How Much Time Is Your Firm Losing to Manual CA Workflows?</h1>
+        <h1>How Much Time Is Your Firm Losing to Manual Project Administration Workflows?</h1>
         <p>Most architecture firms spend 20-30 hours per week on project admin that should take a fraction of the time.</p>
         <div class="workflows">
             <span class="wf-tag"><span class="pip"></span> RFIs</span>
@@ -683,7 +694,7 @@
                                 <span class="field-value" id="staff-value">5</span>
                             </label>
                             <input type="range" id="staff" min="1" max="50" step="1" value="5" oninput="update()">
-                            <div class="field-hint">Architects, PMs, and CA staff who touch RFIs, submittals, or punch lists</div>
+                            <div class="field-hint">Architects, PMs, and project admin staff who touch RFIs, submittals, or punch lists</div>
                         </div>
 
                         <div class="field">
@@ -691,7 +702,7 @@
                                 <span class="field-label">Active projects</span>
                                 <span class="field-value" id="projects-value">4</span>
                             </label>
-                            <input type="range" id="projects" min="1" max="30" step="1" value="4" oninput="update()">
+                            <input type="range" id="projects" min="1" max="500" step="1" value="4" oninput="update()">
                         </div>
 
                         <div class="field">
@@ -709,14 +720,14 @@
                         <div class="section-label"><span class="num">2</span> Current Tools</div>
 
                         <div class="field">
-                            <label for="current-tools"><span class="field-label">Primary method for managing CA</span></label>
+                            <label for="current-tools"><span class="field-label">Primary method for managing Project Administration</span></label>
                             <div class="select-wrap">
                                 <select id="current-tools" onchange="update()">
-                                    <option value="email">Email + spreadsheets</option>
-                                    <option value="generic">Generic PM tool (Asana, Monday, etc.)</option>
-                                    <option value="construction">Construction platform (Procore, etc.)</option>
-                                    <option value="partial">Mix of tools, nothing unified</option>
-                                    <option value="paper">Paper-based / manual tracking</option>
+                                    <option value="email_storage">Email + file storage</option>
+                                    <option value="inbox_helper">Specialized inbox helper (Newforma, AI inbox bots, etc.)</option>
+                                    <option value="generic_pm">Generic PM tool (Monday, Asana, etc.)</option>
+                                    <option value="acc">ACC owned by my firm</option>
+                                    <option value="other_cloud">Other cloud platform owned by my firm</option>
                                 </select>
                             </div>
                         </div>
@@ -727,20 +738,16 @@
                         <div class="section-label"><span class="num">3</span> Weekly Hours on Workflows</div>
                         <p style="font-size:0.78rem;color:var(--text-light);margin-bottom:1rem;">Estimate the total hours your team spends per week across all projects on each workflow. Include drafting, tracking, chasing responses, and logging.</p>
 
-                        <div class="time-grid">
-                            <span class="tg-label">RFIs</span>
-                            <input type="number" class="tg-input" id="hrs-rfi" value="6" min="0" max="80" oninput="update()">
+                        <div class="time-grid" id="primary-workflows"></div>
 
-                            <span class="tg-label">Submittals</span>
-                            <input type="number" class="tg-input" id="hrs-submittals" value="5" min="0" max="80" oninput="update()">
+                        <button type="button" class="more-toggle" id="more-toggle" aria-expanded="false" onclick="toggleMore()">
+                            <span class="mt-label">Add more workflows</span>
+                            <span class="mt-icon">+</span>
+                        </button>
 
-                            <span class="tg-label">Punch Lists</span>
-                            <input type="number" class="tg-input" id="hrs-punchlist" value="4" min="0" max="80" oninput="update()">
+                        <div id="more-workflows" class="more-workflows" hidden></div>
 
-                            <span class="tg-label">Closeout Docs</span>
-                            <input type="number" class="tg-input" id="hrs-closeout" value="3" min="0" max="80" oninput="update()">
-                        </div>
-                        <div class="field-hint" style="margin-top:0.6rem;">Industry benchmarks: firms of this size typically report 15-25 hrs/week total</div>
+                        <div class="field-hint" style="margin-top:0.6rem;">Industry benchmarks: firms of this size typically report 20–40 hrs/week across all workflows</div>
                     </div>
                 </div>
             </div>
@@ -772,26 +779,7 @@
                 <!-- Workflow breakdown -->
                 <div class="panel breakdown-panel">
                     <div class="breakdown-title">Savings by Workflow</div>
-                    <div class="wf-row">
-                        <span class="wf-name">RFIs</span>
-                        <div class="wf-bar-track"><div class="wf-bar-fill rfi" id="bar-rfi" style="width:0%"></div></div>
-                        <span class="wf-hours" id="save-rfi">0h</span>
-                    </div>
-                    <div class="wf-row">
-                        <span class="wf-name">Submittals</span>
-                        <div class="wf-bar-track"><div class="wf-bar-fill submittals" id="bar-submittals" style="width:0%"></div></div>
-                        <span class="wf-hours" id="save-submittals">0h</span>
-                    </div>
-                    <div class="wf-row">
-                        <span class="wf-name">Punch Lists</span>
-                        <div class="wf-bar-track"><div class="wf-bar-fill punchlist" id="bar-punchlist" style="width:0%"></div></div>
-                        <span class="wf-hours" id="save-punchlist">0h</span>
-                    </div>
-                    <div class="wf-row">
-                        <span class="wf-name">Closeout</span>
-                        <div class="wf-bar-track"><div class="wf-bar-fill closeout" id="bar-closeout" style="width:0%"></div></div>
-                        <span class="wf-hours" id="save-closeout">0h</span>
-                    </div>
+                    <div id="breakdown-rows"></div>
                 </div>
 
                 <!-- Annual impact -->
@@ -834,28 +822,102 @@
 
     <script>
         /* ════════════════════════════════════════════
-           EFFICIENCY MULTIPLIERS
+           WORKFLOW CATALOG
            ════════════════════════════════════════════
 
-           These represent the % of time that can be
-           recovered by moving to a purpose-built CA
-           platform, based on current tooling.
+           save  = base % of time CENTERLINE recovers on
+                   this workflow (vs. email + file storage).
+           The selected tool scales it down (toolScalar).
+           primary = shown by default; the rest live behind
+                   the "Add more workflows" expander.
 
-           Higher = more time wasted on current method.
+           NOTE: every save % below is a placeholder pending
+           the client's real time-saved data.
         */
 
-        const toolMultipliers = {
-            email:        { rfi: 0.55, submittals: 0.50, punchlist: 0.60, closeout: 0.55 },
-            generic:      { rfi: 0.40, submittals: 0.35, punchlist: 0.45, closeout: 0.40 },
-            construction: { rfi: 0.25, submittals: 0.20, punchlist: 0.30, closeout: 0.25 },
-            partial:      { rfi: 0.45, submittals: 0.40, punchlist: 0.50, closeout: 0.45 },
-            paper:        { rfi: 0.65, submittals: 0.60, punchlist: 0.70, closeout: 0.65 },
+        const WORKFLOWS = [
+            { id: 'rfi',         name: 'RFIs',                                 phase: 'Construction Admin', primary: true,  save: 0.55, hrs: 6 },
+            { id: 'submittals',  name: 'Submittals',                           phase: 'Construction Admin', primary: true,  save: 0.50, hrs: 5 },
+            { id: 'asi',         name: 'ASI distribution & conforming',        phase: 'Construction Admin', primary: true,  save: 0.55, hrs: 3 },
+            { id: 'contractmod', name: 'Contract mods (PCOs / RFCs / COs)',    phase: 'Construction Admin', primary: true,  save: 0.45, hrs: 3 },
+            { id: 'payapps',     name: 'Pay applications',                     phase: 'Construction Admin', primary: true,  save: 0.45, hrs: 2 },
+            { id: 'punchlist',   name: 'Punch lists',                          phase: 'Closeout',           primary: true,  save: 0.60, hrs: 4 },
+            { id: 'closeout',    name: 'Closeout docs',                        phase: 'Closeout',           primary: true,  save: 0.55, hrs: 3 },
+
+            { id: 'bidding',     name: 'Bidding (RFIs & substitutions)',       phase: 'Preconstruction',    primary: false, save: 0.40, hrs: 0 },
+            { id: 'designtask',  name: 'Design team task tracking',            phase: 'Design',             primary: false, save: 0.45, hrs: 0 },
+            { id: 'designpkg',   name: 'Design package distribution & review', phase: 'Design',             primary: false, save: 0.45, hrs: 0 },
+            { id: 'conforming',  name: 'Drawing & spec conforming',            phase: 'Design',             primary: false, save: 0.50, hrs: 0 },
+            { id: 'inbox',       name: 'Inbox management',                     phase: 'Coordination',       primary: false, save: 0.50, hrs: 0 },
+            { id: 'deadlines',   name: 'Deadline management',                  phase: 'Coordination',       primary: false, save: 0.50, hrs: 0 },
+            { id: 'ahj',         name: 'AHJ coordination',                     phase: 'Coordination',       primary: false, save: 0.35, hrs: 0 },
+            { id: 'fieldreports',name: 'Field reports',                        phase: 'Construction Admin', primary: false, save: 0.45, hrs: 0 },
+            { id: 'warranty',    name: 'Warranty management',                  phase: 'Closeout',           primary: false, save: 0.45, hrs: 0 },
+        ];
+
+        // How much the current tool already mitigates waste (1.00 = none).
+        const toolScalar = {
+            email_storage: 1.00,
+            inbox_helper:  0.78,
+            generic_pm:    0.75,
+            acc:           0.48,
+            other_cloud:   0.66,
         };
+
+        const PHASE_ORDER = ['Preconstruction', 'Design', 'Coordination', 'Construction Admin', 'Closeout'];
+
+        const phaseColor = {
+            'Preconstruction':    '#9aa7c7',
+            'Design':             'var(--navy)',
+            'Coordination':       '#7b8ec2',
+            'Construction Admin': 'var(--blue)',
+            'Closeout':           'var(--teal)',
+        };
+
+        const byId = id => WORKFLOWS.find(w => w.id === id);
 
         const fmt = {
             currency: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
             number: new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }),
         };
+
+        /* ════════════════════════════════════════════
+           CALCULATE & RENDER
+           ════════════════════════════════════════════ */
+
+        /* ── Build the workflow inputs ────────────────── */
+
+        function inputRow(w) {
+            return '<span class="tg-label">' + w.name + '</span>' +
+                   '<input type="number" class="tg-input" data-wf="' + w.id +
+                   '" value="' + w.hrs + '" min="0" max="200" oninput="update()">';
+        }
+
+        // Curated set, always visible
+        document.getElementById('primary-workflows').innerHTML =
+            WORKFLOWS.filter(w => w.primary).map(inputRow).join('');
+
+        // Full set, grouped by phase, behind the expander
+        const moreWorkflows = WORKFLOWS.filter(w => !w.primary);
+        document.getElementById('more-workflows').innerHTML = PHASE_ORDER
+            .map(p => ({ phase: p, items: moreWorkflows.filter(w => w.phase === p) }))
+            .filter(g => g.items.length)
+            .map(g => '<div class="wf-group"><div class="wf-group-label">' + g.phase + '</div>' +
+                      '<div class="time-grid">' + g.items.map(inputRow).join('') + '</div></div>')
+            .join('');
+        document.querySelector('#more-toggle .mt-label').textContent =
+            'Add more workflows (' + moreWorkflows.length + ')';
+
+        function toggleMore() {
+            const btn = document.getElementById('more-toggle');
+            const panel = document.getElementById('more-workflows');
+            const open = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!open));
+            panel.hidden = open;
+            document.querySelector('#more-toggle .mt-label').textContent = open
+                ? 'Add more workflows (' + moreWorkflows.length + ')'
+                : 'Hide extra workflows';
+        }
 
         /* ════════════════════════════════════════════
            CALCULATE & RENDER
@@ -867,122 +929,62 @@
             const projects = parseInt(document.getElementById('projects').value) || 1;
             const rate = parseInt(document.getElementById('avg-rate').value) || 100;
             const tool = document.getElementById('current-tools').value;
-
-            const hrs = {
-                rfi: Math.max(0, parseFloat(document.getElementById('hrs-rfi').value) || 0),
-                submittals: Math.max(0, parseFloat(document.getElementById('hrs-submittals').value) || 0),
-                punchlist: Math.max(0, parseFloat(document.getElementById('hrs-punchlist').value) || 0),
-                closeout: Math.max(0, parseFloat(document.getElementById('hrs-closeout').value) || 0),
-            };
+            const scalar = toolScalar[tool] ?? 1;
 
             // Update display values
             document.getElementById('staff-value').textContent = staff;
             document.getElementById('projects-value').textContent = projects;
             document.getElementById('avg-rate-value').textContent = '$' + rate + '/hr';
 
-            // Calculate savings per workflow
-            const mult = toolMultipliers[tool];
-            const saved = {
-                rfi: hrs.rfi * mult.rfi,
-                submittals: hrs.submittals * mult.submittals,
-                punchlist: hrs.punchlist * mult.punchlist,
-                closeout: hrs.closeout * mult.closeout,
-            };
+            // Sum across every workflow input on the page
+            let totalCurrentHrs = 0, totalSavedHrs = 0;
+            const rows = [];
+            document.querySelectorAll('[data-wf]').forEach(inp => {
+                const w = byId(inp.dataset.wf);
+                if (!w) return;
+                const hrs = Math.max(0, parseFloat(inp.value) || 0);
+                const saved = hrs * w.save * scalar;
+                totalCurrentHrs += hrs;
+                totalSavedHrs += saved;
+                if (saved > 0) rows.push({ name: w.name, saved, color: phaseColor[w.phase] || 'var(--blue)' });
+            });
 
-            const totalCurrentHrs = hrs.rfi + hrs.submittals + hrs.punchlist + hrs.closeout;
-            const totalSavedHrs = saved.rfi + saved.submittals + saved.punchlist + saved.closeout;
             const weeklyWaste = totalCurrentHrs * rate;
             const perPerson = staff > 0 ? totalSavedHrs / staff : 0;
             const annualHrs = totalSavedHrs * 50; // 50 working weeks
             const annualValue = annualHrs * rate;
             const fte = annualHrs / 2000; // 2000 hrs = 1 FTE
 
-            // Render hero
+            // Hero + stat cards
             document.getElementById('hero-hours').innerHTML =
                 fmt.number.format(totalSavedHrs) + '<span class="unit">hrs</span>';
-
-            // Stat cards
             document.getElementById('stat-waste').textContent = fmt.currency.format(weeklyWaste);
             document.getElementById('stat-per-person').textContent = fmt.number.format(perPerson) + 'h';
 
-            // Workflow bars
-            const maxHrs = Math.max(saved.rfi, saved.submittals, saved.punchlist, saved.closeout, 0.1);
-            renderBar('rfi', saved.rfi, maxHrs);
-            renderBar('submittals', saved.submittals, maxHrs);
-            renderBar('punchlist', saved.punchlist, maxHrs);
-            renderBar('closeout', saved.closeout, maxHrs);
+            // Savings-by-workflow breakdown (only workflows with hours, biggest first)
+            rows.sort((a, b) => b.saved - a.saved);
+            const maxHrs = rows.length ? rows[0].saved : 0.1;
+            const breakdown = document.getElementById('breakdown-rows');
+            breakdown.innerHTML = rows.length
+                ? rows.map(r => {
+                    const pct = (r.saved / maxHrs) * 100;
+                    return '<div class="wf-row">' +
+                        '<span class="wf-name">' + r.name + '</span>' +
+                        '<div class="wf-bar-track"><div class="wf-bar-fill" style="width:' + pct + '%;background:' + r.color + '"></div></div>' +
+                        '<span class="wf-hours">' + fmt.number.format(r.saved) + 'h</span>' +
+                    '</div>';
+                }).join('')
+                : '<div class="wf-empty">Add weekly hours above to see your savings breakdown.</div>';
 
-            // Annual
+            // Annual impact
             document.getElementById('annual-hours').textContent = fmt.number.format(annualHrs);
             document.getElementById('annual-value').textContent = fmt.currency.format(annualValue);
             document.getElementById('annual-fte').textContent = fmt.number.format(fte) + ' FTE';
             document.getElementById('annual-savings').textContent = fmt.currency.format(annualValue);
         }
 
-        function renderBar(id, hrs, max) {
-            const pct = max > 0 ? (hrs / max) * 100 : 0;
-            document.getElementById('bar-' + id).style.width = pct + '%';
-            document.getElementById('save-' + id).textContent = fmt.number.format(hrs) + 'h';
-        }
-
         // Initial calculation
         update();
     </script>
-
-</div><!-- /app-gated -->
-
-<script>
-(function() {
-    'use strict';
-
-    // ACCESS CONTROL CONFIG
-    // Current password: "seo123"
-    // Change PASSWORD_HASH to a new SHA-256 hash to rotate the code.
-    // See README.md for how to compute a new hash.
-    const PASSWORD_HASH = '7eaca4f6089914498534f4834350ff0505c2860b8570106c1b56257e7f5cb54e';
-    const STORAGE_KEY = 'centerline-demo-unlocked-v1';
-
-    async function sha256Hex(str) {
-        const buf = new TextEncoder().encode(str);
-        const hash = await crypto.subtle.digest('SHA-256', buf);
-        return Array.from(new Uint8Array(hash)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
-    }
-
-    function unlock() {
-        document.getElementById('access-gate').classList.add('hidden');
-        document.getElementById('app-gated').classList.add('unlocked');
-    }
-
-    async function attempt(val) {
-        try {
-            const h = await sha256Hex(val);
-            if (h === PASSWORD_HASH) {
-                sessionStorage.setItem(STORAGE_KEY, h);
-                unlock();
-                return true;
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    if (sessionStorage.getItem(STORAGE_KEY) === PASSWORD_HASH) {
-        unlock();
-    }
-
-    document.getElementById('gate-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const input = document.getElementById('gate-input');
-        const err = document.getElementById('gate-err');
-        err.textContent = '';
-        const ok = await attempt(input.value);
-        if (!ok) {
-            err.textContent = 'Incorrect access code.';
-            input.value = '';
-            input.focus();
-        }
-    });
-})();
-</script>
-
 </body>
 </html>
